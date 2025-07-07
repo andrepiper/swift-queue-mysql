@@ -32,8 +32,8 @@ class Contractor {
         try {
           await this.db.executeSql(trimmedCommand)
         } catch (err) {
-          if (err.code === 'ER_TABLE_EXISTS_ERROR' || err.code === 'ER_DB_CREATE_EXISTS') {
-            // Ignore table/database already exists errors
+          if (err.code === 'ER_TABLE_EXISTS_ERROR' || err.code === 'ER_DB_CREATE_EXISTS' || err.code === 'ER_DUP_KEYNAME') {
+            // Ignore table/database already exists errors and duplicate key names
             continue
           }
           throw err

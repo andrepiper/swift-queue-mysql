@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 const { program } = require('commander')
-const SwiftQueueMySQL = require('../src/index')
+const SwiftQueueMySQL = require('@swiftworks/swift-queue-mysql')
 const pkg = require('../package.json')
 
 program
   .version(pkg.version)
-  .description('MySQL Boss - Job Queue CLI')
+  .description('Swift Queue MySQL - Job Queue CLI')
 
 // Database connection options
 program
@@ -15,19 +15,19 @@ program
   .option('-u, --user <user>', 'MySQL user', 'root')
   .option('-p, --password <password>', 'MySQL password', '')
   .option('-d, --database <database>', 'MySQL database', 'swift_queue')
-  .option('-s, --schema <schema>', 'MySQL Boss schema', 'swift_queue')
+  .option('-s, --schema <schema>', 'Swift Queue MySQL schema', 'swift_queue')
   .option('-c, --connection-string <connectionString>', 'MySQL connection string')
 
 // Create command
 program
   .command('create')
-  .description('Create MySQL Boss database schema')
+  .description('Create Swift Queue MySQL database schema')
   .action(async (options) => {
-    const boss = createBoss(program.opts())
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
-      console.log('✓ MySQL Boss schema created successfully')
-      await boss.stop()
+      await swiftQueue.start()
+      console.log('✓ Swift Queue MySQL schema created successfully')
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Failed to create schema:', error.message)
       process.exit(1)
@@ -37,16 +37,16 @@ program
 // Status command
 program
   .command('status')
-  .description('Show MySQL Boss status')
+  .description('Show Swift Queue MySQL status')
   .action(async () => {
-    const boss = createBoss(program.opts())
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
-      const states = await boss.countStates()
-      const queues = await boss.getQueues()
+      const states = await swiftQueue.countStates()
+      const queues = await swiftQueue.getQueues()
       
-      console.log('\n📊 MySQL Boss Status')
+      console.log('\n📊 Swift Queue MySQL Status')
       console.log('==================')
       console.log(`Total Jobs: ${states.all || 0}`)
       console.log(`Active: ${states.active || 0}`)
@@ -67,7 +67,7 @@ program
         })
       }
       
-      await boss.stop()
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Failed to get status:', error.message)
       process.exit(1)
@@ -83,10 +83,10 @@ program
   .option('-r, --retry-limit <retryLimit>', 'Retry limit', '3')
   .option('-e, --expire-in <expireIn>', 'Expire in seconds', '900')
   .option('-k, --singleton-key <singletonKey>', 'Singleton key')
-  .action(async (queue, data, options) => {
-    const boss = createBoss(program.opts())
+  .action(async (queueName, data, options) => {
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
       let jobData = {}
       if (data) {
@@ -108,10 +108,10 @@ program
         jobOptions.startAfter = new Date(Date.now() + parseInt(options.delay) * 1000)
       }
       
-      const jobId = await boss.send(queue, jobData, jobOptions)
-      console.log(`✓ Job sent to queue "${queue}" with ID: ${jobId}`)
+      const jobId = await swiftQueue.send(queueName, jobData, jobOptions)
+      console.log(`✓ Job sent to queue "${queueName}" with ID: ${jobId}`)
       
-      await boss.stop()
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Failed to send job:', error.message)
       process.exit(1)
@@ -125,17 +125,17 @@ program
   .option('-b, --batch-size <batchSize>', 'Batch size', '1')
   .option('-i, --interval <interval>', 'Polling interval in ms', '2000')
   .option('-t, --timeout <timeout>', 'Worker timeout in seconds', '30')
-  .action(async (queue, options) => {
-    const boss = createBoss(program.opts())
+  .action(async (queueName, options) => {
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
-      console.log(`🔄 Starting worker for queue "${queue}"...`)
+      console.log(`🔄 Starting worker for queue "${queueName}"...`)
       console.log(`   Batch size: ${options.batchSize}`)
       console.log(`   Polling interval: ${options.interval}ms`)
       console.log('   Press Ctrl+C to stop')
       
-      await boss.work(queue, async (jobs) => {
+      await swiftQueue.work(queueName, async (jobs) => {
         for (const job of jobs) {
           console.log(`📋 Processing job ${job.id}`)
           console.log(`   Data: ${JSON.stringify(job.data)}`)
@@ -154,7 +154,7 @@ program
       // Keep process running
       process.on('SIGINT', async () => {
         console.log('\n🛑 Stopping worker...')
-        await boss.stop()
+        await swiftQueue.stop()
         process.exit(0)
       })
       
@@ -169,10 +169,10 @@ program
   .command('purge <queue>')
   .description('Purge all jobs from a queue')
   .option('-f, --force', 'Force purge without confirmation')
-  .action(async (queue, options) => {
-    const boss = createBoss(program.opts())
+  .action(async (queueName, options) => {
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
       if (!options.force) {
         const readline = require('readline')
@@ -182,22 +182,22 @@ program
         })
         
         const answer = await new Promise(resolve => {
-          rl.question(`Are you sure you want to purge all jobs from queue "${queue}"? (y/N): `, resolve)
+          rl.question(`Are you sure you want to purge all jobs from queue "${queueName}"? (y/N): `, resolve)
         })
         
         rl.close()
         
         if (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes') {
           console.log('Operation cancelled')
-          await boss.stop()
+          await swiftQueue.stop()
           return
         }
       }
       
-      await boss.purgeQueue(queue)
-      console.log(`✓ Queue "${queue}" purged successfully`)
+      await swiftQueue.purgeQueue(queueName)
+      console.log(`✓ Queue "${queueName}" purged successfully`)
       
-      await boss.stop()
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Failed to purge queue:', error.message)
       process.exit(1)
@@ -209,19 +209,19 @@ program
   .command('maintain')
   .description('Run maintenance tasks')
   .action(async () => {
-    const boss = createBoss(program.opts())
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
       console.log('🔧 Running maintenance tasks...')
-      const result = await boss.maintain()
+      const result = await swiftQueue.maintain()
       
       console.log('✓ Maintenance completed:')
       console.log(`   Expired jobs: ${result.expiredJobs}`)
       console.log(`   Archived jobs: ${result.archivedJobs}`)
       console.log(`   Deleted jobs: ${result.deletedJobs}`)
       
-      await boss.stop()
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Maintenance failed:', error.message)
       process.exit(1)
@@ -233,10 +233,10 @@ program
   .command('schedule <queue> <cron> [data]')
   .description('Schedule a recurring job')
   .option('-tz, --timezone <timezone>', 'Timezone', 'UTC')
-  .action(async (queue, cron, data, options) => {
-    const boss = createBoss(program.opts())
+  .action(async (queueName, cron, data, options) => {
+    const swiftQueue = createSwiftQueue(program.opts())
     try {
-      await boss.start()
+      await swiftQueue.start()
       
       let jobData = {}
       if (data) {
@@ -247,23 +247,23 @@ program
         }
       }
       
-      await boss.schedule(queue, cron, jobData, {
+      await swiftQueue.schedule(queueName, cron, jobData, {
         tz: options.timezone || 'UTC'
       })
       
-      console.log(`✓ Job scheduled for queue "${queue}"`)
+      console.log(`✓ Job scheduled for queue "${queueName}"`)
       console.log(`   Cron: ${cron}`)
       console.log(`   Timezone: ${options.timezone || 'UTC'}`)
       
-      await boss.stop()
+      await swiftQueue.stop()
     } catch (error) {
       console.error('✗ Failed to schedule job:', error.message)
       process.exit(1)
     }
   })
 
-// Helper function to create boss instance
-function createBoss(options) {
+// Helper function to create Swift Queue MySQL instance
+function createSwiftQueue(options) {
   const config = {}
   
   if (options.connectionString) {

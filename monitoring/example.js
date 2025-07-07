@@ -1,4 +1,4 @@
-const SwiftQueueMySQL = require('../src/index')
+const SwiftQueueMySQL = require('@swiftworks/swift-queue-mysql')
 const Dashboard = require('./dashboard')
 
 async function runMonitoringExample() {

@@ -1,19 +1,19 @@
-const SwiftQueueMySQL = require('../src/index')
+const SwiftQueueMySQL = require('../src/index.js')
 
 async function advancedExample() {
-  const boss = new SwiftQueueMySQL({
+  const swiftQueue = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
-    password: 'password',
+    password: '',
     database: 'swift_queue'
   })
 
-  boss.on('error', console.error)
-  boss.on('wip', (data) => console.log('Work in progress:', data))
-  boss.on('maintenance', (data) => console.log('Maintenance completed:', data))
+  swiftQueue.on('error', console.error)
+  swiftQueue.on('wip', (data) => console.log('Work in progress:', data))
+  swiftQueue.on('maintenance', (data) => console.log('Maintenance completed:', data))
 
   console.log('Starting swift-queue-mysql...')
-  await boss.start()
+  await swiftQueue.start()
 
   // Create multiple queues with different policies
   const queues = [
@@ -48,12 +48,12 @@ async function advancedExample() {
 
   console.log('Creating queues...')
   for (const queue of queues) {
-    await boss.createQueue(queue.name, queue.options)
+    await swiftQueue.createQueue(queue.name, queue.options)
     console.log(`Created queue: ${queue.name}`)
   }
 
   // Set up dead letter queue
-  await boss.createQueue('email-queue', {
+  await swiftQueue.createQueue('email-queue', {
     retryLimit: 3,
     retryDelay: 60,
     retryBackoff: true,
@@ -61,7 +61,7 @@ async function advancedExample() {
   })
 
   console.log('Setting up scheduled job...')
-  await boss.schedule('daily-cleanup', '0 2 * * *', {
+  await swiftQueue.schedule('daily-cleanup', '0 2 * * *', {
     action: 'cleanup',
     retention: 30
   }, {
@@ -69,13 +69,13 @@ async function advancedExample() {
   })
 
   console.log('Setting up pub/sub...')
-  await boss.subscribe('user-registered', 'email-queue')
-  await boss.subscribe('user-registered', 'high-priority')
+  await swiftQueue.subscribe('user-registered', 'email-queue')
+  await swiftQueue.subscribe('user-registered', 'high-priority')
 
   console.log('Sending various jobs...')
   
   // Regular job
-  await boss.send('high-priority', {
+  await swiftQueue.send('high-priority', {
     type: 'process-payment',
     amount: 99.99,
     currency: 'USD'
@@ -84,7 +84,7 @@ async function advancedExample() {
   })
 
   // Delayed job
-  await boss.send('email-queue', {
+  await swiftQueue.send('email-queue', {
     to: 'user@example.com',
     template: 'welcome',
     data: { name: 'John' }
@@ -93,7 +93,7 @@ async function advancedExample() {
   })
 
   // Singleton job
-  await boss.send('singleton-tasks', {
+  await swiftQueue.send('singleton-tasks', {
     type: 'sync-database',
     table: 'users'
   }, {
@@ -102,7 +102,7 @@ async function advancedExample() {
   })
 
   // Publish event
-  await boss.publish('user-registered', {
+  await swiftQueue.publish('user-registered', {
     userId: 123,
     email: 'newuser@example.com',
     timestamp: new Date().toISOString()
@@ -111,7 +111,7 @@ async function advancedExample() {
   console.log('Setting up workers...')
 
   // High priority worker
-  await boss.work('high-priority', async (jobs) => {
+  await swiftQueue.work('high-priority', async (jobs) => {
     for (const job of jobs) {
       console.log(`Processing high-priority job: ${job.id}`)
       
@@ -138,7 +138,7 @@ async function advancedExample() {
   })
 
   // Email worker
-  await boss.work('email-queue', async (jobs) => {
+  await swiftQueue.work('email-queue', async (jobs) => {
     for (const job of jobs) {
       console.log(`Sending email: ${job.id}`)
       
@@ -158,7 +158,7 @@ async function advancedExample() {
   })
 
   // Singleton worker
-  await boss.work('singleton-tasks', async (jobs) => {
+  await swiftQueue.work('singleton-tasks', async (jobs) => {
     for (const job of jobs) {
       console.log(`Processing singleton job: ${job.id}`)
       
@@ -178,7 +178,7 @@ async function advancedExample() {
   })
 
   // Failed jobs worker
-  await boss.work('failed-jobs', async (jobs) => {
+  await swiftQueue.work('failed-jobs', async (jobs) => {
     for (const job of jobs) {
       console.log(`Processing failed job: ${job.id}`)
       // Log failed job details or send to external monitoring
@@ -195,10 +195,10 @@ async function advancedExample() {
   // Monitor system every 30 seconds
   setInterval(async () => {
     try {
-      const states = await boss.countStates()
+      const states = await swiftQueue.countStates()
       console.log('System status:', states)
       
-      const wipData = await boss.getWipData()
+      const wipData = await swiftQueue.getWipData()
       console.log('Workers status:', wipData.length > 0 ? wipData : 'No active workers')
     } catch (error) {
       console.error('Monitoring error:', error)
@@ -208,7 +208,7 @@ async function advancedExample() {
   // Graceful shutdown
   process.on('SIGINT', async () => {
     console.log('Shutting down gracefully...')
-    await boss.stop({ timeout: 30000 })
+    await swiftQueue.stop({ timeout: 30000 })
     console.log('Shutdown complete')
     process.exit(0)
   })

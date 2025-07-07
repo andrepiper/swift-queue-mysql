@@ -1,29 +1,30 @@
-const SwiftQueueMySQL = require('../src/index')
+const SwiftQueueMySQL = require('../src/index.js') 
 
 async function basicExample() {
-  const boss = new SwiftQueueMySQL({
+  const queue = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
-    password: 'password',
-    database: 'swift_queue'
+    password: '',
+    database: 'swift_queue',
+    autoCreateDatabase: true // Automatically create database if it doesn't exist
   })
 
-  boss.on('error', console.error)
+  queue.on('error', console.error)
 
   console.log('Starting swift-queue-mysql...')
-  await boss.start()
+  await queue.start()
 
   const queueName = 'basic-example'
   
   console.log('Creating queue:', queueName)
-  await boss.createQueue(queueName, {
+  await queue.createQueue(queueName, {
     retryLimit: 2,
     retryDelay: 5,
     expireInSeconds: 60
   })
 
   console.log('Sending job...')
-  const jobId = await boss.send(queueName, {
+  const jobId = await queue.send(queueName, {
     message: 'Hello from swift-queue-mysql!',
     timestamp: new Date().toISOString()
   })
@@ -31,7 +32,7 @@ async function basicExample() {
   console.log('Job sent with ID:', jobId)
 
   console.log('Starting worker...')
-  await boss.work(queueName, async (jobs) => {
+  await queue.work(queueName, async (jobs) => {
     for (const job of jobs) {
       console.log('Processing job:', job.id)
       console.log('Job data:', job.data)
@@ -51,7 +52,7 @@ async function basicExample() {
   // Keep the process running
   process.on('SIGINT', async () => {
     console.log('Shutting down...')
-    await boss.stop()
+    await queue.stop()
     process.exit(0)
   })
 }

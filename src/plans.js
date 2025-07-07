@@ -73,7 +73,7 @@ const assert = require('node:assert')
 function create (schema, version) {
   const commands = [
     createDatabase(schema),
-    useDatabase(schema),
+    // useDatabase(schema), // Removed: USE is not supported in prepared statements
     createTableVersion(schema),
     createTableQueue(schema),
     createTableSchedule(schema),
@@ -92,9 +92,9 @@ function createDatabase (schema) {
   return `CREATE DATABASE IF NOT EXISTS \`${schema}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
 }
 
-function useDatabase (schema) {
-  return `USE \`${schema}\``
-}
+// function useDatabase (schema) {
+//   return `USE \`${schema}\``
+// }
 
 function createTableVersion (schema) {
   return `
@@ -226,58 +226,18 @@ function createTableArchive (schema) {
 function createIndexes (schema) {
   return `
     -- Additional indexes for performance
-    CREATE INDEX \`idx_job_policy_short\` ON \`${schema}\`.\`job\` (\`name\`, \`policy\`, \`state\`, \`start_after\`) 
-    WHERE \`policy\` = 'short';
+    CREATE INDEX \`idx_job_policy_short\` ON \`${schema}\`.\`job\` (\`name\`, \`policy\`, \`state\`, \`start_after\`);
     
-    CREATE INDEX \`idx_job_policy_singleton\` ON \`${schema}\`.\`job\` (\`name\`, \`singleton_key\`, \`state\`, \`start_after\`) 
-    WHERE \`policy\` = 'singleton';
+    CREATE INDEX \`idx_job_policy_singleton\` ON \`${schema}\`.\`job\` (\`name\`, \`singleton_key\`, \`state\`, \`start_after\`);
     
-    CREATE INDEX \`idx_job_policy_stately\` ON \`${schema}\`.\`job\` (\`name\`, \`policy\`, \`state\`, \`start_after\`) 
-    WHERE \`policy\` = 'stately'
+    CREATE INDEX \`idx_job_policy_stately\` ON \`${schema}\`.\`job\` (\`name\`, \`policy\`, \`state\`, \`start_after\`);
   `
 }
 
 function createProcedures (schema) {
-  return `
-    -- Procedure to create queue
-    DELIMITER $$
-    CREATE PROCEDURE \`${schema}\`.\`create_queue\`(
-      IN queue_name VARCHAR(255),
-      IN options JSON
-    )
-    BEGIN
-      INSERT IGNORE INTO \`${schema}\`.\`queue\` (
-        \`name\`,
-        \`policy\`,
-        \`retry_limit\`,
-        \`retry_delay\`,
-        \`retry_backoff\`,
-        \`expire_seconds\`,
-        \`retention_minutes\`,
-        \`dead_letter\`
-      ) VALUES (
-        queue_name,
-        JSON_UNQUOTE(JSON_EXTRACT(options, '$.policy')),
-        JSON_EXTRACT(options, '$.retryLimit'),
-        JSON_EXTRACT(options, '$.retryDelay'),
-        JSON_EXTRACT(options, '$.retryBackoff'),
-        JSON_EXTRACT(options, '$.expireInSeconds'),
-        JSON_EXTRACT(options, '$.retentionMinutes'),
-        JSON_UNQUOTE(JSON_EXTRACT(options, '$.deadLetter'))
-      );
-    END$$
-    DELIMITER ;
-    
-    -- Procedure to delete queue
-    DELIMITER $$
-    CREATE PROCEDURE \`${schema}\`.\`delete_queue\`(
-      IN queue_name VARCHAR(255)
-    )
-    BEGIN
-      DELETE FROM \`${schema}\`.\`queue\` WHERE \`name\` = queue_name;
-    END$$
-    DELIMITER ;
-  `
+  // Skip stored procedures for now as DELIMITER commands cause issues
+  // when executed programmatically in MySQL2
+  return '-- Stored procedures skipped for compatibility'
 }
 
 const baseJobColumns = 'id, name, data, expire_in_seconds as expireInSeconds'
@@ -575,11 +535,22 @@ function updateQueue (schema) {
 }
 
 function createQueue (schema) {
-  return `CALL \`${schema}\`.\`create_queue\`(?, ?)`
+  return `
+    INSERT IGNORE INTO \`${schema}\`.\`queue\` (
+      \`name\`,
+      \`policy\`,
+      \`retry_limit\`,
+      \`retry_delay\`,
+      \`retry_backoff\`,
+      \`expire_seconds\`,
+      \`retention_minutes\`,
+      \`dead_letter\`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `
 }
 
 function deleteQueue (schema) {
-  return `CALL \`${schema}\`.\`delete_queue\`(?)`
+  return `DELETE FROM \`${schema}\`.\`queue\` WHERE \`name\` = ?`
 }
 
 function getQueues (schema) {

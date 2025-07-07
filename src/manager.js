@@ -84,7 +84,7 @@ class Manager extends EventEmitter {
   }
 
   async send (name, data, options = {}) {
-    const { sending } = Attorney.checkSendArgs([name, data, options], this.config)
+    const sending = Attorney.checkSendArgs([name, data, options], this.config)
     
     const job = {
       id: sending.options.id || uuidv4(),
@@ -368,8 +368,19 @@ class Manager extends EventEmitter {
     Attorney.assertQueueName(name)
     Attorney.assertQueueOptions(options)
     
-    const queueOptions = JSON.stringify(options)
-    await this.db.executeSql(this.createQueueCommand, [name, queueOptions])
+    // Extract individual options for the SQL statement
+    const params = [
+      name,
+      options.policy || 'standard',
+      options.retryLimit || 3,
+      options.retryDelay || 0,
+      options.retryBackoff || false,
+      options.expireInSeconds || 900,
+      options.retentionMinutes || null,
+      options.deadLetter || null
+    ]
+    
+    await this.db.executeSql(this.createQueueCommand, params)
   }
 
   async updateQueue (name, options = {}) {

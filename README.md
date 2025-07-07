@@ -66,6 +66,40 @@ This will cater to teams already familiar with MySQL and want to limit how many 
 npm install @swiftworks/swift-queue-mysql
 ```
 
+## Database Setup
+
+Before using swift-queue-mysql, you need to set up your MySQL database:
+
+### Option 1: Manual Database Creation
+Create the database manually in MySQL:
+
+```sql
+CREATE DATABASE swift_queue CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### Option 2: Using Docker with init.sql
+If you're using Docker, you can use the provided `init.sql` file:
+
+```bash
+# Copy init.sql to your MySQL Docker container's initialization directory
+# The file will automatically create the database and user when the container starts
+```
+
+### Option 3: Auto-Creation
+swift-queue-mysql can automatically create the database and schema when you first call `start()`:
+
+```js
+const queue = new SwiftQueueMySQL({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'swift_queue', // Will be created if it doesn't exist
+  autoCreateDatabase: true // Enable auto-creation
+});
+
+await queue.start(); // Creates database and schema if needed
+```
+
 ## Requirements
 
 * MySQL 5.7+ or MySQL 8.0+
