@@ -1,6 +1,6 @@
 # MySQL Boss
 
-Queueing jobs in MySQL from Node.js like a boss.
+Queueing jobs in MySQL from Node.js
 
 [![npm version](https://badge.fury.io/js/mysql-boss.svg)](https://badge.fury.io/js/mysql-boss)
 
