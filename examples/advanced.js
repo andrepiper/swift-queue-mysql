@@ -5,14 +5,14 @@ async function advancedExample() {
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'mysql_boss'
+    database: 'swift_queue'
   })
 
   boss.on('error', console.error)
   boss.on('wip', (data) => console.log('Work in progress:', data))
   boss.on('maintenance', (data) => console.log('Maintenance completed:', data))
 
-  console.log('Starting mysql-boss...')
+  console.log('Starting swift-queue-mysql...')
   await boss.start()
 
   // Create multiple queues with different policies

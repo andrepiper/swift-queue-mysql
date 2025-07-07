@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 
-const DEFAULT_SCHEMA = 'mysql_boss'
+const DEFAULT_SCHEMA = 'swift_queue'
 const MIGRATE_RACE_MESSAGE = 'Duplicate entry'
 const CREATE_RACE_MESSAGE = 'already exists'
 

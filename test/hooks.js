@@ -15,7 +15,7 @@ before(async function() {
   try {
     await adminBoss.start()
     
-    const testDb = process.env.MYSQL_DATABASE || 'mysql_boss_test'
+    const testDb = process.env.MYSQL_DATABASE || 'swift_queue_test'
     await adminBoss.getDb().executeSql(`CREATE DATABASE IF NOT EXISTS \`${testDb}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`)
     
     await adminBoss.stop()
@@ -38,7 +38,7 @@ after(async function() {
   try {
     await adminBoss.start()
     
-    const testDb = process.env.MYSQL_DATABASE || 'mysql_boss_test'
+    const testDb = process.env.MYSQL_DATABASE || 'swift_queue_test'
     await adminBoss.getDb().executeSql(`DROP DATABASE IF EXISTS \`${testDb}\``)
     
     await adminBoss.stop()
@@ -67,7 +67,7 @@ global.createTestBoss = function(options = {}) {
     host: process.env.MYSQL_HOST || 'localhost',
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'password',
-    database: process.env.MYSQL_DATABASE || 'mysql_boss_test',
+    database: process.env.MYSQL_DATABASE || 'swift_queue_test',
     ...options
   })
 }

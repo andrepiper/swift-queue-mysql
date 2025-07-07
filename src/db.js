@@ -24,7 +24,7 @@ class Db extends EventEmitter {
     }
 
     this.config = mysqlConfig
-    this.schema = config.schema || 'mysql_boss'
+    this.schema = config.schema || 'swift_queue'
   }
 
   events = {

@@ -82,7 +82,7 @@ const queue = new SwiftQueueMySQL({
   port: 3306,
   user: 'root',
   password: 'password',
-  database: 'mysql_boss',
+  database: 'swift_queue',
   
   // Or use connection string
   // connectionString: 'mysql://user:password@host:port/database',
@@ -93,7 +93,7 @@ const queue = new SwiftQueueMySQL({
   idleTimeoutMillis: 30000,
   
   // swift-queue-mysql specific options
-  schema: 'mysql_boss',
+  schema: 'swift_queue',
   archiveInterval: 86400, // 24 hours
   deleteAfter: 86400, // 24 hours
   maintenanceIntervalSeconds: 300, // 5 minutes

@@ -30,7 +30,7 @@
     "start": "node examples/basic.js",
     "start:advanced": "node examples/advanced.js",
     "start:dashboard": "node monitoring/example.js",
-    "cli": "node bin/mysql-boss.js"
+    "cli": "node bin/swift-queue-mysql.js"
   },
   "mocha": {
     "timeout": 10000,
@@ -77,7 +77,7 @@
     "url": "https://github.com/swiftworks/swift-queue-mysql.git"
   },
   "bin": {
-    "mysql-boss": "./bin/mysql-boss.js"
+    "swift-queue-mysql": "./bin/swift-queue-mysql.js"
   },
   "files": [
     "src/",

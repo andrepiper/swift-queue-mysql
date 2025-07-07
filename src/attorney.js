@@ -75,15 +75,15 @@ module.exports = {
 
 function getConfig (value) {
   const config = {
-    schema: 'mysql_boss',
+    schema: 'swift_queue',
     user: 'root',
     password: '',
     host: 'localhost',
     port: 3306,
-    database: 'mysql_boss',
+    database: 'swift_queue',
     ssl: false,
     connectionString: null,
-    application_name: 'mysql-boss',
+    application_name: 'swift-queue-mysql',
     max: 10,
     connectionTimeoutMillis: 30000,
     idleTimeoutMillis: 30000,

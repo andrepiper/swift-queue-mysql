@@ -14,8 +14,8 @@ program
   .option('-P, --port <port>', 'MySQL port', '3306')
   .option('-u, --user <user>', 'MySQL user', 'root')
   .option('-p, --password <password>', 'MySQL password', '')
-  .option('-d, --database <database>', 'MySQL database', 'mysql_boss')
-  .option('-s, --schema <schema>', 'MySQL Boss schema', 'mysql_boss')
+  .option('-d, --database <database>', 'MySQL database', 'swift_queue')
+  .option('-s, --schema <schema>', 'MySQL Boss schema', 'swift_queue')
   .option('-c, --connection-string <connectionString>', 'MySQL connection string')
 
 // Create command

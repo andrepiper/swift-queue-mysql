@@ -11,7 +11,7 @@ describe('SwiftQueueMySQL Basic Tests', function() {
       host: process.env.MYSQL_HOST || 'localhost',
       user: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || 'password',
-      database: process.env.MYSQL_DATABASE || 'mysql_boss_test'
+      database: process.env.MYSQL_DATABASE || 'swift_queue_test'
     })
     
     await boss.start()

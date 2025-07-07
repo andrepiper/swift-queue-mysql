@@ -5,12 +5,12 @@ async function basicExample() {
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'mysql_boss'
+    database: 'swift_queue'
   })
 
   boss.on('error', console.error)
 
-  console.log('Starting mysql-boss...')
+  console.log('Starting swift-queue-mysql...')
   await boss.start()
 
   const queueName = 'basic-example'
@@ -24,7 +24,7 @@ async function basicExample() {
 
   console.log('Sending job...')
   const jobId = await boss.send(queueName, {
-    message: 'Hello from mysql-boss!',
+    message: 'Hello from swift-queue-mysql!',
     timestamp: new Date().toISOString()
   })
 

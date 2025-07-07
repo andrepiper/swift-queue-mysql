@@ -3,11 +3,11 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-boss-db
+    container_name: swift-queue-mysql-db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mysql_boss
+      MYSQL_DATABASE: swift_queue
       MYSQL_USER: queue_user
       MYSQL_PASSWORD: queue_password
     ports:
@@ -21,9 +21,9 @@ services:
       timeout: 20s
       retries: 10
 
-  mysql-boss-app:
+  swift-queue-mysql-app:
     build: .
-    container_name: mysql-boss-app
+    container_name: swift-queue-mysql-app
     restart: unless-stopped
     depends_on:
       mysql:
@@ -33,7 +33,7 @@ services:
       MYSQL_PORT: 3306
       MYSQL_USER: queue_user
       MYSQL_PASSWORD: queue_password
-      MYSQL_DATABASE: mysql_boss
+      MYSQL_DATABASE: swift_queue
     volumes:
       - ./examples:/app/examples
       - ./src:/app/src

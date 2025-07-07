@@ -7,7 +7,7 @@ async function runMonitoringExample() {
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'mysql_boss'
+    database: 'swift_queue'
   })
 
   // Start MySQL Boss
