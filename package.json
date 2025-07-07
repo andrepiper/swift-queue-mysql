@@ -1,6 +1,6 @@
 {
   "name": "@swiftworks/swift-queue-mysql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Queueing jobs in MySQL from Node.js",
   "main": "./src/index.js",
   "engines": {

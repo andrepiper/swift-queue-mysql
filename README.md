@@ -8,7 +8,7 @@ Queueing jobs in MySQL from Node.js
 
 ```js
 async function readme() {
-  const SwiftQueueMySQL = require('./src/index');
+  const SwiftQueueMySQL = require('@swiftworks/swift-queue-mysql');
   const queue = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
