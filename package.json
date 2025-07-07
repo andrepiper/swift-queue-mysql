@@ -1,0 +1,90 @@
+{
+  "name": "mysql-boss",
+  "version": "1.0.0",
+  "description": "Queueing jobs in MySQL from Node.js like a boss",
+  "main": "./src/index.js",
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "mysql2": "^3.6.5",
+    "cron-parser": "^4.9.0",
+    "serialize-error": "^8.1.0",
+    "uuid": "^9.0.1",
+    "commander": "^11.1.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.57",
+    "luxon": "^3.6.1",
+    "mocha": "^10.8.2",
+    "nyc": "^17.1.0",
+    "standard": "^17.1.2"
+  },
+  "scripts": {
+    "test": "standard && mocha",
+    "cover": "nyc npm test",
+    "readme": "node ./test/readme.js",
+    "db:migrate": "node -e 'console.log(require(\"./src\").getMigrationPlans())'",
+    "db:construct": "node -e 'console.log(require(\"./src\").getConstructionPlans())'",
+    "start": "node examples/basic.js",
+    "start:advanced": "node examples/advanced.js",
+    "start:dashboard": "node monitoring/example.js",
+    "cli": "node bin/mysql-boss.js"
+  },
+  "mocha": {
+    "timeout": 10000,
+    "slow": 10000,
+    "bail": true,
+    "parallel": true,
+    "require": "./test/hooks"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.js"
+    ],
+    "sourceMap": false,
+    "instrument": true,
+    "reporter": [
+      "lcov",
+      "text-summary",
+      "text"
+    ]
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach"
+    ]
+  },
+  "keywords": [
+    "job",
+    "queue",
+    "worker",
+    "cron",
+    "mysql",
+    "background",
+    "async"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mysql-boss.git"
+  },
+  "bin": {
+    "mysql-boss": "./bin/mysql-boss.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "monitoring/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ]
+}

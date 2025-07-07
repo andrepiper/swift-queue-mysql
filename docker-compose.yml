@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-boss-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mysql_boss
+      MYSQL_USER: queue_user
+      MYSQL_PASSWORD: queue_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  mysql-boss-app:
+    build: .
+    container_name: mysql-boss-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: queue_user
+      MYSQL_PASSWORD: queue_password
+      MYSQL_DATABASE: mysql_boss
+    volumes:
+      - ./examples:/app/examples
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+    command: node examples/basic.js
+
+volumes:
+  mysql_data:
