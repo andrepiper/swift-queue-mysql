@@ -1,5 +1,7 @@
 # Swift Queue MySQL
 
+Inspired by [pg-boss](https://github.com/timgit/pg-boss)
+
 Queueing jobs in MySQL from Node.js
 
 [![npm version](https://badge.fury.io/js/@swiftworks%2Fswift-queue-mysql.svg)](https://badge.fury.io/js/@swiftworks%2Fswift-queue-mysql)
@@ -7,26 +9,26 @@ Queueing jobs in MySQL from Node.js
 ```js
 async function readme() {
   const SwiftQueueMySQL = require('./src/index');
-  const boss = new SwiftQueueMySQL({
+  const queue = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'mysql_boss'
+    database: 'swift_queue'
   });
 
-  boss.on('error', console.error)
+  queue.on('error', console.error)
 
-  await boss.start()
+  await queue.start()
 
-  const queue = 'readme-queue'
+  const queueName = 'readme-queue'
 
-  await boss.createQueue(queue)
+  await queue.createQueue(queueName)
 
-  const id = await boss.send(queue, { arg1: 'read me' })
+  const id = await queue.send(queueName, { arg1: 'read me' })
 
-  console.log(`created job ${id} in queue ${queue}`)
+  console.log(`created job ${id} in queue ${queueName}`)
 
-  await boss.work(queue, async (jobs) => {
+  await queue.work(queueName, async (jobs) => {
     for (const job of jobs) {
       console.log(`received job ${job.id} with data ${JSON.stringify(job.data)}`)
     }
@@ -74,7 +76,7 @@ npm install @swiftworks/swift-queue-mysql
 swift-queue-mysql accepts the following configuration options:
 
 ```js
-const boss = new MysqlBoss({
+const queue = new SwiftQueueMySQL({
   // MySQL connection options
   host: 'localhost',
   port: 3306,
@@ -90,7 +92,7 @@ const boss = new MysqlBoss({
   connectionTimeoutMillis: 30000,
   idleTimeoutMillis: 30000,
   
-  // mysql-boss specific options
+  // swift-queue-mysql specific options
   schema: 'mysql_boss',
   archiveInterval: 86400, // 24 hours
   deleteAfter: 86400, // 24 hours
@@ -108,7 +110,7 @@ const boss = new MysqlBoss({
 Creates a new queue with the specified options.
 
 ```js
-await boss.createQueue('my-queue', {
+await queue.createQueue('my-queue', {
   policy: 'standard',
   retryLimit: 3,
   retryDelay: 60,
@@ -140,7 +142,7 @@ Deletes all jobs in a queue.
 Sends a job to a queue.
 
 ```js
-const jobId = await boss.send('email-queue', {
+const jobId = await queue.send('email-queue', {
   to: 'user@example.com',
   subject: 'Welcome!',
   body: 'Welcome to our service!'
@@ -159,7 +161,7 @@ const jobId = await boss.send('email-queue', {
 Processes jobs from a queue.
 
 ```js
-await boss.work('email-queue', async (jobs) => {
+await queue.work('email-queue', async (jobs) => {
   for (const job of jobs) {
     await sendEmail(job.data)
   }
@@ -175,7 +177,7 @@ await boss.work('email-queue', async (jobs) => {
 Manually fetch jobs from a queue.
 
 ```js
-const jobs = await boss.fetch('my-queue', {
+const jobs = await queue.fetch('my-queue', {
   batchSize: 10,
   includeMetadata: true
 })
@@ -202,7 +204,7 @@ Retries job(s).
 Schedules a recurring job.
 
 ```js
-await boss.schedule('daily-cleanup', '0 2 * * *', {
+await queue.schedule('daily-cleanup', '0 2 * * *', {
   action: 'cleanup'
 }, {
   tz: 'America/New_York'
@@ -270,17 +272,17 @@ Clears all job data.
 ## Error Handling
 
 ```js
-boss.on('error', (error) => {
-  console.error('mysql-boss error:', error)
+queue.on('error', (error) => {
+  console.error('swift-queue-mysql error:', error)
 })
 ```
 
 ## Testing
 
-mysql-boss includes several test utilities and configuration options for testing:
+swift-queue-mysql includes several test utilities and configuration options for testing:
 
 ```js
-const boss = new MysqlBoss({
+const queue = new SwiftQueueMySQL({
   // Test configuration
   __test__throw_worker: false,
   __test__delay_monitor: 0,
@@ -289,17 +291,6 @@ const boss = new MysqlBoss({
   __test__throw_maint: false
 })
 ```
-
-## Differences from pg-boss
-
-This MySQL implementation differs from pg-boss in several ways:
-
-1. **Locking**: Uses MySQL's `FOR UPDATE` instead of PostgreSQL's `SKIP LOCKED`
-2. **Data Types**: Uses MySQL's `JSON` instead of PostgreSQL's `JSONB`
-3. **UUIDs**: Uses MySQL's `UUID()` function instead of PostgreSQL's `gen_random_uuid()`
-4. **Intervals**: Uses MySQL's `INTERVAL` syntax instead of PostgreSQL's interval types
-5. **Partitioning**: Uses MySQL's partitioning features adapted for MySQL syntax
-6. **Procedures**: Uses MySQL's stored procedure syntax instead of PL/pgSQL
 
 ## Contributing
 
@@ -314,6 +305,5 @@ MIT
 ### Version 1.0.0
 - Initial release
 - MySQL-compatible job queue implementation
-- Support for all major pg-boss features adapted for MySQL
 - Comprehensive test suite
 - Full documentation
