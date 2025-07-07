@@ -1,0 +1,15 @@
+node_modules/
+.git/
+.gitignore
+.nyc_output/
+coverage/
+test/
+*.test.js
+.eslintrc*
+.vscode/
+.idea/
+*.log
+docker-compose.yml
+Dockerfile
+.env
+.env.*
