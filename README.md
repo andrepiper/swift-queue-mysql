@@ -1,13 +1,13 @@
-# MySQL Boss
+# Swift Queue MySQL
 
 Queueing jobs in MySQL from Node.js
 
-[![npm version](https://badge.fury.io/js/mysql-boss.svg)](https://badge.fury.io/js/mysql-boss)
+[![npm version](https://badge.fury.io/js/@swiftworks%2Fswift-queue-mysql.svg)](https://badge.fury.io/js/@swiftworks%2Fswift-queue-mysql)
 
 ```js
 async function readme() {
-  const MysqlBoss = require('./src/index');
-  const boss = new MysqlBoss({
+  const SwiftQueueMySQL = require('./src/index');
+  const boss = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
     password: 'password',
@@ -40,9 +40,9 @@ readme()
   })
 ```
 
-mysql-boss is a job queue built in Node.js on top of MySQL to provide background processing and reliable asynchronous execution to Node.js applications.
+swift-queue-mysql is a job queue built in Node.js on top of MySQL to provide background processing and reliable asynchronous execution to Node.js applications.
 
-mysql-boss uses MySQL's `FOR UPDATE` with optimistic locking to provide job processing safety and prevent job duplication. While it doesn't have PostgreSQL's `SKIP LOCKED` feature, it implements similar functionality using MySQL's locking mechanisms.
+swift-queue-mysql uses MySQL's `FOR UPDATE` with optimistic locking to provide job processing safety and prevent job duplication. While it doesn't have PostgreSQL's `SKIP LOCKED` feature, it implements similar functionality using MySQL's locking mechanisms.
 
 This will cater to teams already familiar with MySQL and want to limit how many systems are required to monitor and support in their architecture.
 
@@ -61,7 +61,7 @@ This will cater to teams already familiar with MySQL and want to limit how many 
 ## Installation
 
 ```bash
-npm install mysql-boss
+npm install @swiftworks/swift-queue-mysql
 ```
 
 ## Requirements
@@ -71,7 +71,7 @@ npm install mysql-boss
 
 ## Configuration
 
-mysql-boss accepts the following configuration options:
+swift-queue-mysql accepts the following configuration options:
 
 ```js
 const boss = new MysqlBoss({

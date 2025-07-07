@@ -13,7 +13,7 @@ const events = {
   stopped: 'stopped'
 }
 
-class MysqlBoss extends EventEmitter {
+class SwiftQueueMySQL extends EventEmitter {
   #stoppingOn
   #stopped
   #starting
@@ -306,4 +306,4 @@ class MysqlBoss extends EventEmitter {
   }
 }
 
-module.exports = MysqlBoss
+module.exports = SwiftQueueMySQL

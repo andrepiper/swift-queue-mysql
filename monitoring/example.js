@@ -1,9 +1,9 @@
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 const Dashboard = require('./dashboard')
 
 async function runMonitoringExample() {
-  // Create MySQL Boss instance
-  const boss = new MysqlBoss({
+  // Create SwiftQueueMySQL instance
+  const boss = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
     password: 'password',

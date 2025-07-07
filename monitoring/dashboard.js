@@ -1,5 +1,5 @@
 const express = require('express')
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 
 class Dashboard {
   constructor (boss, options = {}) {

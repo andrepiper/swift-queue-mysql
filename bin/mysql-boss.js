@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { program } = require('commander')
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 const pkg = require('../package.json')
 
 program
@@ -278,7 +278,7 @@ function createBoss(options) {
   
   config.schema = options.schema
   
-  return new MysqlBoss(config)
+  return new SwiftQueueMySQL(config)
 }
 
 // Parse command line arguments

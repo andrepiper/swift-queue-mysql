@@ -1,11 +1,11 @@
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 
 // Global test hooks
 before(async function() {
   this.timeout(10000)
   
   // Create test database if it doesn't exist
-  const adminBoss = new MysqlBoss({
+  const adminBoss = new SwiftQueueMySQL({
     host: process.env.MYSQL_HOST || 'localhost',
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'password',
@@ -28,7 +28,7 @@ after(async function() {
   this.timeout(10000)
   
   // Clean up test database
-  const adminBoss = new MysqlBoss({
+  const adminBoss = new SwiftQueueMySQL({
     host: process.env.MYSQL_HOST || 'localhost',
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'password',
@@ -63,7 +63,7 @@ global.waitForCondition = async function(condition, timeout = 5000, interval = 1
 
 // Helper function to create test boss instance
 global.createTestBoss = function(options = {}) {
-  return new MysqlBoss({
+  return new SwiftQueueMySQL({
     host: process.env.MYSQL_HOST || 'localhost',
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || 'password',

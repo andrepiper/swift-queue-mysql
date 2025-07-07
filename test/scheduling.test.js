@@ -1,5 +1,5 @@
 const assert = require('assert')
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 
 describe('Scheduling Tests', function() {
   this.timeout(15000)
@@ -7,7 +7,7 @@ describe('Scheduling Tests', function() {
   let boss
 
   before(async function() {
-    boss = new MysqlBoss({
+    boss = new SwiftQueueMySQL({
       host: process.env.MYSQL_HOST || 'localhost',
       user: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || 'password',

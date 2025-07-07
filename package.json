@@ -1,7 +1,7 @@
 {
-  "name": "mysql-boss",
+  "name": "@swiftworks/swift-queue-mysql",
   "version": "1.0.0",
-  "description": "Queueing jobs in MySQL from Node.js like a boss",
+  "description": "Queueing jobs in MySQL from Node.js",
   "main": "./src/index.js",
   "engines": {
     "node": ">=16"
@@ -70,11 +70,11 @@
     "background",
     "async"
   ],
-  "author": "Your Name",
+  "author": "andrepiper",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/mysql-boss.git"
+    "url": "https://github.com/swiftworks/swift-queue-mysql.git"
   },
   "bin": {
     "mysql-boss": "./bin/mysql-boss.js"

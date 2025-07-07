@@ -1,7 +1,7 @@
-const MysqlBoss = require('../src/index')
+const SwiftQueueMySQL = require('../src/index')
 
 async function basicExample() {
-  const boss = new MysqlBoss({
+  const boss = new SwiftQueueMySQL({
     host: 'localhost',
     user: 'root',
     password: 'password',
